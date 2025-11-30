@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinCompose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -42,6 +43,20 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+detekt {
+    toolVersion = libs.versions.detekt.get()
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+    buildUponDefaultConfig = true
+    allRules = false
+    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+        reports {
+            html.required.set(true)
+            html.outputLocation.set(layout.buildDirectory.file("detekt-reports/detekt.html"))
+            xml.required.set(false)   // disable XML
+            md.required.set(true)     // enable Markdown
+        }
     }
 }
 

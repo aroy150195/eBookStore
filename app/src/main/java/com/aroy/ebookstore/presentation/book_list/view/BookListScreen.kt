@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.aroy.ebookstore.core.SharePrefsHelper
 import com.aroy.ebookstore.core.components.ClickType
 import com.aroy.ebookstore.core.components.CustomTopAppBar
 import com.aroy.ebookstore.core.components.ScreenType
@@ -77,8 +78,9 @@ fun BookListScreen(
     val events = viewModel.events.collectAsState(initial = null)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var drawerSelectedItem by remember { mutableIntStateOf(0) }
+    var drawerSelectedItem by remember { mutableIntStateOf(-1) }
     var bottomBarSelectedItem by remember { mutableIntStateOf(0) }
+    val sharePrefsHelper = remember { SharePrefsHelper(navController.context) }
     val drawerItems = listOf(
         "Kotlin" to Icons.Default.Code,
         "Java" to Icons.Default.Api,
@@ -99,7 +101,13 @@ fun BookListScreen(
 
     // Trigger LoadBooks intent automatically when the screen is first composed
     LaunchedEffect(Unit) {
-        viewModel.processIntent(BookListIntent.LoadBooks(query = "Kotlin"))
+        val savedBookQuery = sharePrefsHelper.getString("book_query")
+        val query = savedBookQuery.ifEmpty {
+            drawerSelectedItem = 0
+            sharePrefsHelper.saveString("book_query", "Kotlin")
+            "Kotlin"
+        }
+        viewModel.processIntent(BookListIntent.LoadBooks(query = query))
     }
 
     // Handle one-time events
@@ -111,7 +119,7 @@ fun BookListScreen(
                 }
 
                 is BookListEvent.ShowToast -> {
-                    // Show toast message
+                    //Toast.makeText(navController.context, event.message, Toast.LENGTH_SHORT).show()
                 }
 
                 is BookListEvent.NavigateToFavorite -> {
@@ -157,6 +165,10 @@ fun BookListScreen(
                     HorizontalDivider()
                     // Drawer content
                     drawerItems.forEachIndexed { index, (item, icon) ->
+                        val savedBookQuery = sharePrefsHelper.getString("book_query")
+                        if(savedBookQuery.isNotEmpty() && item == savedBookQuery) {
+                            drawerSelectedItem = index
+                        }
                         NavigationDrawerItem(
                             label = {
                                 Text(
@@ -178,6 +190,7 @@ fun BookListScreen(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
+                                        sharePrefsHelper.saveString("book_query", item)
                                         viewModel.processIntent(BookListIntent.LoadBooks(query = item))
                                     }
                                     scope.launch {
@@ -291,7 +304,6 @@ fun BookListScreen(
             ) {
                 when {
                     state.isLoading -> CircularProgressIndicator()
-                    state.error != null -> Text("Error : ${state.error}")
                     else -> {
                         LazyColumn(
                             modifier = Modifier

@@ -65,7 +65,6 @@ fun BookItem(
                         ImageView(
                             imageUrl = booksItems?.volumeInfo?.imageLinks?.smallThumbnail.orEmpty(),
                             title = booksItems?.volumeInfo?.title.orEmpty(),
-                            drawableImage = R.drawable.gallery
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))

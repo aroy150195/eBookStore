@@ -36,7 +36,9 @@ fun <T> updateResult(
                 ResultState.Success(fetchRemoteResult.value)
             }
 
-            is Either.Failure -> ResultState.Error(fetchRemoteResult.value.message)
+            is Either.Failure -> {
+                ResultState.Error(fetchRemoteResult.value.message)
+            }
         }
     )
 }
