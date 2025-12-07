@@ -1,0 +1,111 @@
+package com.aroy.ebookstore.architecture.base.classic.view
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.ViewDataBinding
+import com.aroy.ebookstore.architecture.base.classic.viewmodel.BaseViewModel
+
+typealias Inflater<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
+
+/**
+ * Created by Amit Roy on Date : 04/12/25
+ *
+ * A base fragment class that integrates Android's [ViewDataBinding] with a [BaseViewModel].
+ *
+ * This abstract class provides a common foundation for fragments that use the
+ * Data Binding library to bind UI components directly to observable data
+ * exposed by a ViewModel. It extends [BaseViewModelFragment] to ensure that
+ * the ViewModel lifecycle is properly tied to the fragment.
+ *
+ * Typical responsibilities of this class include:
+ * - Inflating the layout with Data Binding
+ * - Exposing the binding instance to subclasses
+ * - Connecting the binding to the associated ViewModel
+ * - Providing lifecycle-aware observation of ViewModel state
+ *
+ * @param T the type of [ViewDataBinding] associated with this fragment's layout.
+ *          This allows subclasses to access the generated binding class directly.
+ * @param VM the type of [BaseViewModel] associated with this fragment.
+ *           The ViewModel is expected to manage UI state and handle events
+ *           specific to the fragment's screen.
+ *
+ * Example usage:
+ * ```
+ * class LoginFragment :
+ *     BaseViewDataBindingFragment<FragmentLoginBinding, LoginViewModel>() {
+ *     // Fragment-specific logic here
+ * }
+ * ```
+ */
+abstract class BaseViewDataBindingFragment<T: ViewDataBinding, VM: BaseViewModel<*, *>> : BaseViewModelFragment<VM>() {
+
+    private var _binding: T? = null
+
+    /**
+     * Provides access to the [ViewDataBinding] instance associated with this fragment.
+     *
+     * This property exposes the non-nullable binding object after the fragment's
+     * view has been created. It is backed by the nullable `_binding` field and
+     * uses the not-null assertion (!!) to guarantee safe access once the view
+     * lifecycle is active.
+     *
+     * Note: Accessing this property outside of the fragment's view lifecycle
+     * (e.g., before `onCreateView` or after `onDestroyView`) will result in a
+     * [NullPointerException]. Always use it only when the fragment's view is
+     * valid.
+     *
+     * @see _binding the backing nullable binding field
+     */
+    protected val binding: T
+        get() = _binding!!
+
+    protected abstract fun bindingInflater(): Inflater<T>
+
+    /**
+     * Binds the [viewModel] instance to the layout's Data Binding variable.
+     *
+     * This function connects the fragment's [BaseViewModel] to the XML layout
+     * by assigning it to the `viewModel` variable defined in the layout's
+     * `<data>` section. The binding uses the generated [BR] class, which
+     * contains identifiers for all declared variables.
+     *
+     * Example XML:
+     * ```
+     * <layout>
+     *   <data>
+     *     <variable
+     *       name="viewModel"
+     *       type="com.aroy.corearch.ui.viewmodel.LoginViewModel" />
+     *   </data>
+     *   ...
+     * </layout>
+     * ```
+     *
+     * By calling `binding.setVariable(BR.viewModel, viewModel)`, the layout
+     * can automatically observe and react to changes in the ViewModel's
+     * exposed state.
+     *
+     * Note: Ensure that the `viewModel` variable is declared in the layout,
+     * otherwise this binding call will fail at runtime.
+     */
+    protected open fun bindViewModel() {
+        //BR is left here ex: BR.viewmodel, BR._all etc instead of 1 should give BR value
+        binding.setVariable(1, viewModel)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        if(_binding == null) {
+            _binding = bindingInflater().invoke(inflater, container, false)
+        }
+        binding.lifecycleOwner = viewLifecycleOwner
+        bindViewModel()
+        return binding.root
+    }
+
+}

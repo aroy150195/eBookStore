@@ -1,8 +1,8 @@
 package com.aroy.ebookstore.presentation.book_list.viewModel
 
 import androidx.lifecycle.viewModelScope
-import com.aroy.ebookstore.core.BaseViewModel
-import com.aroy.ebookstore.core.ResultState
+import com.aroy.ebookstore.architecture.common.ResultState
+import com.aroy.ebookstore.architecture.base.compose.viewmodel.BaseComposeViewModel
 import com.aroy.ebookstore.core.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookListViewModel @Inject constructor(
     private val repository: BookRepository
-) : BaseViewModel<BookListState, BookListEvent, BookListIntent>(BookListState()) {
+) : BaseComposeViewModel<BookListState, BookListEvent, BookListIntent>(BookListState()) {
 
     override suspend fun handleIntent(intent: BookListIntent) {
         when (intent) {

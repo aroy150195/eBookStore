@@ -1,8 +1,8 @@
 package com.aroy.ebookstore.core.repository
 
-import com.aroy.ebookstore.core.ResultState
+import com.aroy.ebookstore.architecture.common.ResultState
+import com.aroy.ebookstore.architecture.common.updateResult
 import com.aroy.ebookstore.data.dao.BookResponseDao
-import com.aroy.ebookstore.core.updateResult
 import com.aroy.ebookstore.model.BookResponse
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -1,7 +1,7 @@
 package com.aroy.ebookstore.core.repository
 
-import com.aroy.ebookstore.core.network.ApiError
-import com.aroy.ebookstore.core.network.Either
+import com.aroy.ebookstore.architecture.common.ApiError
+import com.aroy.ebookstore.architecture.common.Either
 import com.aroy.ebookstore.core.network.service.BooksAPI
 import com.aroy.ebookstore.model.BookResponse
 import javax.inject.Inject

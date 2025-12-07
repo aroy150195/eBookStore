@@ -1,4 +1,4 @@
-package com.aroy.ebookstore.core.network
+package com.aroy.ebookstore.architecture.common
 
 /**
  * Created by Amit Roy on Date : 29/11/25

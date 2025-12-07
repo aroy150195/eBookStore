@@ -1,7 +1,5 @@
-package com.aroy.ebookstore.core
+package com.aroy.ebookstore.architecture.common
 
-import com.aroy.ebookstore.core.network.ApiError
-import com.aroy.ebookstore.core.network.Either
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

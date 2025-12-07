@@ -44,6 +44,9 @@ android {
     buildFeatures {
         compose = true
     }
+    buildFeatures {
+        dataBinding = true
+    }
 }
 detekt {
     toolVersion = libs.versions.detekt.get()
@@ -61,11 +64,20 @@ detekt {
 }
 
 dependencies {
-    // Core + Lifecycle
+    // eBookStore Core Module
+
+    // Core + Lifecycle + Fragment
     implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
     implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.lifecycle.viewmodel)
-    implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.kotlin.fragment)
+    implementation(libs.compose.fragment)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.databinding.runtime)
+
 
     // Activity Compose
     implementation(libs.activity.compose)
