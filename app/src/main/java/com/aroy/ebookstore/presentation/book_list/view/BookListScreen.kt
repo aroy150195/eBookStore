@@ -75,7 +75,6 @@ fun BookListScreen(
     viewModel: BookListViewModel
 ) {
     val state by viewModel.viewState.collectAsState()
-    val events = viewModel.events.collectAsState(initial = null)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var drawerSelectedItem by remember { mutableIntStateOf(-1) }
@@ -111,8 +110,8 @@ fun BookListScreen(
     }
 
     // Handle one-time events
-    LaunchedEffect(events.value) {
-        events.value?.let { event ->
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
             when (event) {
                 is BookListEvent.NavigateToDetails -> {
                     navController.navigate(Screen.BookDetailsScreen.route)
@@ -203,9 +202,9 @@ fun BookListScreen(
                                 selectedContainerColor = MaterialTheme.colorScheme.secondary.copy(
                                     alpha = 0.15f
                                 ), // background when selected
-                                selectedTextColor = MaterialTheme.colorScheme.secondary,                         // text color when selected
-                                unselectedContainerColor = Color.Transparent,                                  // background when not selected
-                                unselectedTextColor = MaterialTheme.colorScheme.onSurface                      // text color when not selected
+                                selectedTextColor = MaterialTheme.colorScheme.secondary, // text color when selected
+                                unselectedContainerColor = Color.Transparent, // background when not selected
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurface // text color when not selected
                             ),
                             icon = {
                                 Icon(
@@ -310,15 +309,15 @@ fun BookListScreen(
                                 .fillMaxSize()
                                 .padding(15.dp)
                         ) {
-                            items(state.books) { bookItem ->
+                            items(items = state.books, key = {it.id.orEmpty()}) { bookItem ->
                                 BookItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                            /*navController.currentBackStackEntry?.savedStateHandle?.set(
                                                 key = "book",
                                                 value = bookItem
-                                            )
+                                            )*/
                                             viewModel.processIntent(
                                                 BookListIntent.SelectBook(bookItem.id)
                                             )
