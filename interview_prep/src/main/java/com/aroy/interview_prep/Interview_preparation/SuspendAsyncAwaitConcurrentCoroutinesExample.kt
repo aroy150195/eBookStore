@@ -1,8 +1,9 @@
-package com.aroy.ebookstore.Interview_preparation
+package com.aroy.interview_prep.Interview_preparation
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlin.system.measureTimeMillis
 
 /**
  * Created by Amit Roy on Date : 16/12/25
@@ -28,16 +29,18 @@ fun main() = runBlocking {
     println("Coroutine started")
 
     // Run two tasks concurrently
-    val userDeferred = async { fetchUserData() }
-    val profileDeferred = async { fetchProfileData("Amit") }
+    val timeElapsed = measureTimeMillis {
+        val userDeferred = async { fetchUserData() }
+        val profileDeferred = async { fetchProfileData("Amit") }
 
-    // Await results (suspends until each is ready)
-    val user = userDeferred.await()
-    val profile = profileDeferred.await()
+        // Await results (suspends until each is ready)
+        val user = userDeferred.await()
+        val profile = profileDeferred.await()
 
-    println("User: $user")
-    println("Profile: $profile")
-
+        println("User: $user")
+        println("Profile: $profile")
+    }
+    println("Time Elapsed : $timeElapsed")
     println("Coroutine finished")
 }
 

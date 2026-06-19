@@ -1,7 +1,8 @@
-package com.aroy.ebookstore.Interview_preparation
+package com.aroy.interview_prep.Interview_preparation
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -48,22 +49,35 @@ fun main() = runBlocking {
      * Closes the channel after sending all values.
      */
     launch {
-        for(i in 1..3) {
-            channel.send(i)
-            delay(500)
+        repeat(10) {
+            delay(100)
+            channel.send(it)
+            println("Sent: $it")
         }
         channel.close()
     }
 
     /**
-     * Consumer loop:
-     * Iterates over the channel and prints each received value.
-     * Terminates automatically when the channel is closed.
+     * Demonstrates consuming values from a Channel using `consumeAsFlow`.
      *
-     * Note: Channels do not require `collect`. This loop is the idiomatic way
-     * to consume values from a channel.
+     * Channels in Kotlin are designed for one-to-one communication:
+     * - Each element sent into the channel is delivered to a single receiver.
+     * - Once a consumer collects a value, it is removed from the channel buffer
+     *   and cannot be collected again by another consumer.
+     *
+     * In this example:
+     * - Receiver1 collects and prints all values from the channel.
+     * - Receiver2 also attempts to collect, but will not receive any values
+     *   because Receiver1 has already consumed them.
+     *
+     * For broadcasting to multiple collectors, consider using `SharedFlow` or `StateFlow`,
+     * which allow multiple subscribers to observe the same stream of values.
      */
-    for(value in channel) {
-        println("Received: $value")
+    channel.consumeAsFlow().collect {
+        println("Receiver 1: $it")
+    }
+
+    channel.consumeAsFlow().collect {
+        println("Receiver 2: $it")
     }
 }

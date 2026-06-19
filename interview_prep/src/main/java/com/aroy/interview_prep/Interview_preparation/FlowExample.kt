@@ -1,4 +1,4 @@
-package com.aroy.ebookstore.Interview_preparation
+package com.aroy.interview_prep.Interview_preparation
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow

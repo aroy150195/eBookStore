@@ -42,7 +42,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aroy.ebookstore.core.SharePrefsHelper
 import com.aroy.ebookstore.core.components.ClickType
@@ -74,12 +74,13 @@ fun BookListScreen(
     navController: NavController,
     viewModel: BookListViewModel
 ) {
-    val state by viewModel.viewState.collectAsState()
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var drawerSelectedItem by remember { mutableIntStateOf(-1) }
     var bottomBarSelectedItem by remember { mutableIntStateOf(0) }
     val sharePrefsHelper = remember { SharePrefsHelper(navController.context) }
+
     val drawerItems = listOf(
         "Kotlin" to Icons.Default.Code,
         "Java" to Icons.Default.Api,

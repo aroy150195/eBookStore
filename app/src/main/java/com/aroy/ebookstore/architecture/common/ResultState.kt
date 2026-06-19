@@ -17,14 +17,14 @@ sealed class ResultState<out T> {
      * Represents an ongoing operation.
      * Typically used to show a loading indicator in the UI.
      */
-    object Loading : ResultState<Nothing>()
+    data object Loading : ResultState<Nothing>()
 
     /**
      * Represents a successful operation with the resulting data.
      *
      * @param data The data returned from the operation.
      */
-    data class Success<T>(val data: T) : ResultState<T>()
+    data class Success<out T>(val data: T) : ResultState<T>()
 
     /**
      * Represents a failed operation.

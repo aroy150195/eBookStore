@@ -49,6 +49,7 @@ material = "1.13.0"
 # Fragment
 fragment_version = "1.8.9"
 databindingRuntime = "8.13.1"
+jetbrainsKotlinJvm = "2.2.10"
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -57,6 +58,7 @@ kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kot
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 
 [libraries]
 # AndroidX Core + Lifecycle + Fragment

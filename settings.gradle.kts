@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "eBookStore"
 include(":app")
+include(":interview_prep")

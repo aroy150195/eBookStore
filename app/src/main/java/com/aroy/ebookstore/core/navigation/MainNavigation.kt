@@ -1,5 +1,8 @@
 package com.aroy.ebookstore.core.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -19,7 +22,11 @@ fun MainNavigation(navController: NavHostController) {
         navController = navController,
         startDestination = Screen.BookListScreen.route
     ) {
-        composable(route = Screen.BookListScreen.route) {
+        composable(
+            route = Screen.BookListScreen.route,
+            enterTransition = { fadeIn(animationSpec = tween(700)) },
+            exitTransition = { fadeOut(animationSpec = tween(700)) }
+        ) {
             val viewModel: BookListViewModel = hiltViewModel()
             BookListScreen(navController, viewModel)
         }

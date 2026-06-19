@@ -54,6 +54,7 @@ abstract class BaseViewModel<VS : Any, E : Any>(
     val events: SharedFlow<E> = _events.asSharedFlow()
 
     /**
+     * This is extension function as taking as param
      * Update the current [VS] (ViewState) by applying a reducer function.
      *
      * @param reducer A function that takes the current state and returns a new state.
@@ -61,6 +62,12 @@ abstract class BaseViewModel<VS : Any, E : Any>(
     protected fun setState(reducer: VS.() -> VS) {
         _viewState.update { it.reducer() }
     }
+
+    /* ------------ OR  ----------- */
+    /* This is normal function as taking as param
+    protected fun setState(reducer: (VS) -> VS) {
+        _viewState.update { reducer(it) }
+    }*/
 
     /**
      * Send a one-time [E] (Event) to the UI.

@@ -38,16 +38,24 @@ android {
     }
     kotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8) // or JVM_1_8 depending on your JDK
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
     buildFeatures {
         compose = true
-    }
-    buildFeatures {
         dataBinding = true
     }
 }
+
+// Add this block to fix the "SourceSet with name 'main' not found" error.
+// This explicitly tells the Kotlin plugin about the 'main' source set
+// so that the IDE's standalone Kotlin runner can function correctly.
+kotlin {
+    sourceSets {
+        maybeCreate("main").kotlin.srcDirs("src/main/java")
+    }
+}
+
 detekt {
     toolVersion = libs.versions.detekt.get()
     config.setFrom("$rootDir/config/detekt/detekt.yml")
@@ -57,8 +65,8 @@ detekt {
         reports {
             html.required.set(true)
             html.outputLocation.set(layout.buildDirectory.file("detekt-reports/detekt.html"))
-            xml.required.set(false)   // disable XML
-            md.required.set(true)     // enable Markdown
+            xml.required.set(false)
+            md.required.set(true)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.aroy.ebookstore.Interview_preparation
+package com.aroy.interview_prep.Interview_preparation
 
 import com.google.gson.Gson
 
@@ -16,7 +16,7 @@ fun main() {
 private val json = "{\"name\": \"Amit\", \"age\": 30}"
 
 private inline fun <reified T> printTypeName(value: T) {
-    println("Type name is ${T::class.simpleName}")
+    println("Type name is ${value::class.simpleName}")
 }
 
 private inline fun <reified T> Any?.isOfType(): Boolean = this is T
