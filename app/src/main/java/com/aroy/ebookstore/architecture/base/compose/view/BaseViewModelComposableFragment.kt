@@ -19,7 +19,7 @@ abstract class BaseViewModelComposableFragment<T: BaseViewModel<*, *>> : BaseVie
      * Define the composable UI content for this fragment
      */
     @Composable
-    abstract fun content()
+    abstract fun Content()
 
 
     override fun onCreateView(
@@ -60,7 +60,7 @@ abstract class BaseViewModelComposableFragment<T: BaseViewModel<*, *>> : BaseVie
         return ComposeView(requireContext()).apply {
             setContent {
                 EBookStoreTheme {
-                    content()
+                    Content()
                 }
             }
         }
