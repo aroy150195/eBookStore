@@ -123,8 +123,9 @@ fun BookListScreen(
         "About" to Icons.Default.Info,
         "Profile" to Icons.Default.Person,
     )
-    val savedBookQuery = sharePrefsHelper.getString("book_query")
+
     LaunchedEffect(Unit) {
+        val savedBookQuery = sharePrefsHelper.getString("book_query")
         val query = savedBookQuery.ifEmpty {
             drawerSelectedItem = 0
             sharePrefsHelper.saveString("book_query", "Kotlin")
@@ -188,6 +189,7 @@ fun BookListScreen(
                     HorizontalDivider()
                     // Drawer content
                     drawerItems.forEachIndexed { index, (item, icon) ->
+                        val savedBookQuery = sharePrefsHelper.getString("book_query")
                         if(savedBookQuery.isNotEmpty() && item == savedBookQuery) {
                             drawerSelectedItem = index
                         }

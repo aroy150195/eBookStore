@@ -5,6 +5,8 @@ import com.aroy.ebookstore.architecture.common.ResultState
 import com.aroy.ebookstore.architecture.base.compose.viewmodel.BaseComposeViewModel
 import com.aroy.ebookstore.core.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,6 +17,14 @@ import javax.inject.Inject
 class BookListViewModel @Inject constructor(
     private val repository: BookRepository
 ) : BaseComposeViewModel<BookListState, BookListEvent, BookListIntent>(BookListState()) {
+
+    /*private val _savedBookQuery = MutableStateFlow("")
+    val savedBookQuery = _savedBookQuery.asStateFlow()
+
+    fun updateSelectedItem(item: String) {
+        prefs.edit().putString("selected_item", item).apply()
+        _selectedItem.value = item
+    }*/
 
     override suspend fun handleIntent(intent: BookListIntent) {
         when (intent) {
