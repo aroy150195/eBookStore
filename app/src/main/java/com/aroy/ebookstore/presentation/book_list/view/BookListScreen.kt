@@ -1,6 +1,11 @@
 package com.aroy.ebookstore.presentation.book_list.view
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,13 +49,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -80,6 +90,22 @@ fun BookListScreen(
     var drawerSelectedItem by remember { mutableIntStateOf(-1) }
     var bottomBarSelectedItem by remember { mutableIntStateOf(0) }
     val sharePrefsHelper = remember { SharePrefsHelper(navController.context) }
+    var showControls by remember { mutableStateOf(true) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                when {
+                    available.y < 0 -> showControls = false // Scrolling down
+                    available.y > 0 -> showControls = true // Scrolling up
+                }
+                return Offset.Zero
+            }
+        }
+    }
 
     val drawerItems = listOf(
         "Kotlin" to Icons.Default.Code,
@@ -97,11 +123,8 @@ fun BookListScreen(
         "About" to Icons.Default.Info,
         "Profile" to Icons.Default.Person,
     )
-
-
-    // Trigger LoadBooks intent automatically when the screen is first composed
+    val savedBookQuery = sharePrefsHelper.getString("book_query")
     LaunchedEffect(Unit) {
-        val savedBookQuery = sharePrefsHelper.getString("book_query")
         val query = savedBookQuery.ifEmpty {
             drawerSelectedItem = 0
             sharePrefsHelper.saveString("book_query", "Kotlin")
@@ -165,7 +188,6 @@ fun BookListScreen(
                     HorizontalDivider()
                     // Drawer content
                     drawerItems.forEachIndexed { index, (item, icon) ->
-                        val savedBookQuery = sharePrefsHelper.getString("book_query")
                         if(savedBookQuery.isNotEmpty() && item == savedBookQuery) {
                             drawerSelectedItem = index
                         }
@@ -251,48 +273,60 @@ fun BookListScreen(
                 )
             },
             bottomBar = {
-                NavigationBar {
-                    bottomBarItems.forEachIndexed { index, (item, icon) ->
-                        NavigationBarItem(
-                            selected = bottomBarSelectedItem == index,
-                            onClick = {
-                                //Todo: BottomBar Navigation
-                                bottomBarSelectedItem = index
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = item
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = item,
-                                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                                    fontFamily = FontFamily.Serif,
-                                    fontWeight = MaterialTheme.typography.titleSmall.fontWeight
-                                )
-                            }
+                AnimatedVisibility(
+                    visible = showControls,
+                    enter = slideInVertically { it },
+                    exit = slideOutVertically { it }
+                ) {
+                    NavigationBar {
+                        bottomBarItems.forEachIndexed { index, (item, icon) ->
+                            NavigationBarItem(
+                                selected = bottomBarSelectedItem == index,
+                                onClick = {
+                                    //Todo: BottomBar Navigation
+                                    bottomBarSelectedItem = index
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = item
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = item,
+                                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                                        fontFamily = FontFamily.Serif,
+                                        fontWeight = MaterialTheme.typography.titleSmall.fontWeight
+                                    )
+                                }
 
-                        )
+                            )
+                        }
                     }
                 }
             },
             floatingActionButton = {
-                FloatingActionButton(
-                    modifier = Modifier.padding(4.dp),
-                    onClick = {
-                        viewModel.processIntent(BookListIntent.OpenFavoriteBooks)
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                    elevation = FloatingActionButtonDefaults.elevation(),
-                    shape = CircleShape
+                AnimatedVisibility(
+                    visible = showControls,
+                    enter = fadeIn() + slideInVertically { it },
+                    exit = fadeOut() + slideOutVertically { it }
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Favorite"
-                    )
+                    FloatingActionButton(
+                        modifier = Modifier.padding(4.dp),
+                        onClick = {
+                            viewModel.processIntent(BookListIntent.OpenFavoriteBooks)
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                        elevation = FloatingActionButtonDefaults.elevation(),
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = "Favorite"
+                        )
+                    }
                 }
             }
         ) { innerPadding ->
@@ -309,6 +343,7 @@ fun BookListScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(15.dp)
+                                .nestedScroll(nestedScrollConnection)
                         ) {
                             items(items = state.books, key = {it.id.orEmpty()}) { bookItem ->
                                 BookItem(
